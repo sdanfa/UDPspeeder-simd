@@ -861,15 +861,15 @@ void process_arg(int argc, char *argv[]) {
                     }
                     mylog(log_info, "decode-buf=%d\n", fec_buff_num);
                 } else if (strcmp(long_options[option_index].name, "fwmark") == 0) {
-+                    disable_fwmark = 0;
-+                    sscanf(optarg, "%x" SCNu32, &fwmark_num);
-+                    //Re-route function to common.c for processing by set_socket_mark
-+                    //TODO: parsing code for 0x hex see if fits in uint32_t and compare fwmark_num_tmp
-+                    //if (fwmark_num_tmp != ) {
-+                    //    mylog(log_fatal, "fwmark value must be between 0 and 10 \n");
-+                    //    myexit(-1);
-+                    //}
-+                    mylog(log_info, "fwmark_num_tmp=%x\n", fwmark_num);
+                    disable_fwmark = 0;
+                    sscanf(optarg, "%x" SCNu32, &fwmark_num);
+                    //Re-route function to common.c for processing by set_socket_mark
+                    //TODO: parsing code for 0x hex see if fits in uint32_t and compare fwmark_num_tmp
+                    //if (fwmark_num_tmp != ) {
+                    //    mylog(log_fatal, "fwmark value must be between 0 and 10 \n");
+                    //    myexit(-1);
+                    //}
+                    mylog(log_info, "fwmark_num_tmp=%x\n", fwmark_num);
                  } else if (strcmp(long_options[option_index].name, "mode") == 0) {
                     sscanf(optarg, "%d", &g_fec_par.mode);
                     if (g_fec_par.mode != 0 && g_fec_par.mode != 1) {
