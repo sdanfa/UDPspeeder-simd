@@ -72,6 +72,7 @@ static void print_help() {
     printf("    -q,--queue-len        <number>        fec queue len, only for mode 0, fec will be performed immediately after queue is full.\n");
     printf("                                          default value: 200. \n");
     printf("    --decode-buf          <number>        size of buffer of fec decoder,unit: packet, default: 2000\n");
+    printf("    --fwmark              <number>        hexadecimal value of fwmark such as 0x2:\n");
     //    printf("    --fix-latency         <number>        try to stabilize latency, only for mode 0\n");
     printf("    --delay-capacity      <number>        max number of delayed packets, 0 means unlimited, default: 0\n");
     printf("    --disable-fec         <number>        completely disable fec, turn the program into a normal udp tunnel\n");
