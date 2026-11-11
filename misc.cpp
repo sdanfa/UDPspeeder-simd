@@ -6,6 +6,7 @@
  */
 
 #include "misc.h"
+#include <inttypes.h> // for "%" SCNu32
 
 char fifo_file[1000] = "";
 
@@ -14,6 +15,7 @@ int mtu_warn = 1350;
 int disable_mtu_warn = 1;
 int disable_fec = 0;
 /* disable_checksum now lives in cook_ctx (packet.cpp) */
+int disable_fwmark = 1;
 
 int debug_force_flush_fec = 0;
 
@@ -63,6 +65,7 @@ int manual_set_tun = 0;
 int persist_tun = 0;
 
 char rs_par_str[rs_str_len] = "20:10";
+uint32_t fwmark_num;
 
 int from_normal_to_fec(conn_info_t &conn_info, char *data, int len, int &out_n, char **&out_arr, int *&out_len, my_time_t *&out_delay) {
     static my_time_t out_delay_buf[max_fec_packet_num + 100] = {0};
@@ -644,6 +647,7 @@ void process_arg(int argc, char *argv[]) {
             {"mode", required_argument, 0, 1},
             {"timeout", required_argument, 0, 1},
             {"decode-buf", required_argument, 0, 1},
+            {"fwmark", required_argument, 0, 1},
             {"queue-len", required_argument, 0, 'q'},
             {"fec", required_argument, 0, 'f'},
             {"jitter", required_argument, 0, 'j'},
@@ -856,7 +860,17 @@ void process_arg(int argc, char *argv[]) {
                         myexit(-1);
                     }
                     mylog(log_info, "decode-buf=%d\n", fec_buff_num);
-                } else if (strcmp(long_options[option_index].name, "mode") == 0) {
+                } else if (strcmp(long_options[option_index].name, "fwmark") == 0) {
++                    disable_fwmark = 0;
++                    sscanf(optarg, "%x" SCNu32, &fwmark_num);
++                    //Re-route function to common.c for processing by set_socket_mark
++                    //TODO: parsing code for 0x hex see if fits in uint32_t and compare fwmark_num_tmp
++                    //if (fwmark_num_tmp != ) {
++                    //    mylog(log_fatal, "fwmark value must be between 0 and 10 \n");
++                    //    myexit(-1);
++                    //}
++                    mylog(log_info, "fwmark_num_tmp=%x\n", fwmark_num);
+                 } else if (strcmp(long_options[option_index].name, "mode") == 0) {
                     sscanf(optarg, "%d", &g_fec_par.mode);
                     if (g_fec_par.mode != 0 && g_fec_par.mode != 1) {
                         mylog(log_fatal, "mode should be 0 or 1\n");
