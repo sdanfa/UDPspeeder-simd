@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "log.h"
+#include "misc.h"
 
 #include <random>
 #include <cmath>
@@ -646,6 +647,15 @@ int set_buf_size(int fd, int socket_buf_size) {
     return 0;
 }
 
+int set_socket_mark(int fd, uint32_t mark_number)
+{
+    if (setsockopt(fd, SOL_SOCKET, SO_MARK, &mark_number, sizeof(mark_number)) < 0) {
+        mylog(log_fatal, "SO_MARK Failed");
+        myexit(1);
+    }
+    return 0;
+}
+
 void myexit(int a) {
     if (enable_log_color)
         printf("%s\n", RESET);
@@ -853,6 +863,9 @@ int new_listen_socket2(int &fd, address_t &addr) {
     }
     setnonblocking(fd);
     set_buf_size(fd, socket_buf_size);
+    if (disable_fwmark == 0) {
+        set_socket_mark(fd, fwmark_num);
+    }
 
     mylog(log_debug, "local_listen_fd=%d\n", fd);
 
@@ -881,6 +894,10 @@ int new_connected_socket2(int &fd, address_t &addr, address_t *bind_addr, char *
 
     setnonblocking(fd);
     set_buf_size(fd, socket_buf_size);
+
+    if (disable_fwmark == 0) {
+        set_socket_mark(fd, fwmark_num);
+    }
 
     mylog(log_debug, "[%s]created new udp_fd %d\n", addr.get_str(), fd);
     int ret = connect(fd, (struct sockaddr *)&addr.inner, addr.get_len());
